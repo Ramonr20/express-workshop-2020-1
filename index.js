@@ -1,7 +1,12 @@
+const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
 const { pokemon } = require('./pokedex.json'); //Destructuring
 
+// a todas las peticiones se les aplique una función
+//añadir middleweres
+app.use(bodyParser.json()); //procesa la petición a json
+app.use(bodyParser.urlencoded({ extended: true}));
 
 /* 
 GET - obtener recursos
@@ -15,12 +20,16 @@ app.get("/", (req, res, next) => {
     return res.status(200).send("Bienvenido al Pokedex");
 });
 
+app.post("/pokemon", (req, res, next) => {
+    return res.status(200).send(req.body);
+});
+
 // ('url', (req, res, next) => {})
-app.get('/pokemon/', (req, res, next) => {
+app.get('/pokemon', (req, res, next) => {
     return res.status(200).send(pokemon);
 });
 
-app.get('/pokemon/:id([0-9]{1,3})/', (req, res, next) => {
+app.get('/pokemon/:id([0-9]{1,3})', (req, res, next) => {
     const id = req.params.id - 1;
 
     if (id >= 0 && id <= 150) {
@@ -30,11 +39,11 @@ app.get('/pokemon/:id([0-9]{1,3})/', (req, res, next) => {
     return res.status(200).send("Pokemon no encontrado");
 });
 
-app.get('/pokemon/:name([A-Za-z]+)/', (req, res, next) => {
+app.get('/pokemon/:name([A-Za-z]+)', (req, res, next) => {
     const name = req.params.name;
 
     const poke = pokemon.filter((p) => {
-        return (p.name.toLowerCase() == name.toLowerCase()) ? p : null;
+        return (p.name.toLowerCase() == name.toLowerCase()) && p;
     });
     
     if (poke.length != null) {
