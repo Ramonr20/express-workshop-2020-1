@@ -1,8 +1,12 @@
 const bodyParser = require('body-parser');
+const morgan = require('morgan');
+
 const express = require('express');
 const app = express();
-const { pokemon } = require('./pokedex.json'); //Destructuring
 
+const pokemon = require('./routes/pokemon');
+
+app.use(morgan('dev'));
 // a todas las peticiones se les aplique una función
 //añadir middleweres
 app.use(bodyParser.json()); //procesa la petición a json
@@ -20,39 +24,8 @@ app.get("/", (req, res, next) => {
     return res.status(200).send("Bienvenido al Pokedex");
 });
 
-app.post("/pokemon", (req, res, next) => {
-    return res.status(200).send(req.body);
-});
-
-// ('url', (req, res, next) => {})
-app.get('/pokemon', (req, res, next) => {
-    return res.status(200).send(pokemon);
-});
-
-app.get('/pokemon/:id([0-9]{1,3})', (req, res, next) => {
-    const id = req.params.id - 1;
-
-    if (id >= 0 && id <= 150) {
-        return res.status(200).send(pokemon[id]);
-    }
-
-    return res.status(200).send("Pokemon no encontrado");
-});
-
-app.get('/pokemon/:name([A-Za-z]+)', (req, res, next) => {
-    const name = req.params.name;
-
-    const poke = pokemon.filter((p) => {
-        return (p.name.toLowerCase() == name.toLowerCase()) && p;
-    });
-    
-    if (poke.length != null) {
-        return res.status(200).send(poke);
-    }
-
-    return res.status(404).send("Pokemon no encontrado")
-
-});
+// cargar las rutas de pokemon
+app.use("/pokemon", pokemon);
 
 // process.env.PORT -> define the 80 port if it's no used and not declared
 app.listen(process.env.PORT || 3000, () => {
