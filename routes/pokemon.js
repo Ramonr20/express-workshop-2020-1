@@ -10,32 +10,35 @@ pokemon.post("/", (req, res, next) => {
 
 // ('url', (req, res, next) => {})
 pokemon.get('/', async (req, res, next) => {
-    const pokmn = await db.query("SELECT * FROM pokemon");
-    return res.status(200).json(pokmn);
+    const pk = await db.query("SELECT * FROM pokemon");
+    return res.status(200).json(pk);
 });
 
-pokemon.get('/:id([0-9]{1,3})', (req, res, next) => {
-    const id = req.params.id - 1;
+pokemon.get('/:id([0-9]{1,3})', async (req, res, next) => {
+    const id = req.params.id;
 
-    if (id >= 0 && id <= 150) {
-        return res.status(200).send(pk[id]);
-    }
+    let query = "SELECT * FROM pokemon WHERE pok_id = " + id;
 
-    return res.status(200).send("Pokemon no encontrado");
+    await db.query(query, (err, data) => {
+        if (data.length > 0) {
+            return res.status(200).json(data);
+        }
+        return res.status(404).send("Pokemon no encontrado"); 
+    });    
+
 });
 
-pokemon.get('/:name([A-Za-z]+)', (req, res, next) => {
-    const name = req.params.name;
+pokemon.get('/:name([A-Za-z]+)', async (req, res, next) => {
+    let name = req.params.name;
 
-    const poke = pk.filter((p) => {
-        return (p.name.toLowerCase() == name.toLowerCase()) && p;
+    let query = "SELECT * FROM pokemon WHERE pok_name = " + "\'" + name.toLowerCase() + "\'";
+
+    await db.query(query, (err, data) => {
+        if (data.length > 0) {
+            return res.status(200).json(data);
+        }
+        return res.status(404).send("Pokemon no encontrado")
     });
-    
-    if (poke.length != null) {
-        return res.status(200).send(poke);
-    }
-
-    return res.status(404).send("Pokemon no encontrado")
 
 });
 
