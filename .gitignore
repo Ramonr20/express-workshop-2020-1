@@ -1,2 +1,4 @@
 #dependencys
 node_modules/
+#Ignore UI
+Pokedex/
