@@ -9,6 +9,7 @@ const user = require('./routes/user');
 const auth = require('./middleware/auth');
 const notFound = require('./middleware/notFound');
 const index = require('./middleware/index');
+const cors = require('./middleware/cors');
 //express middleware
 app.use(morgan('dev'));
 app.use(express.json());
@@ -21,7 +22,7 @@ PATCH - modificar una parte de un recurso
 PUT - modificar un recurso
 DELETE - borrar un recurso
 */
-
+app.use(cors);
 app.get("/", index);
 app.use("/user", user);//cargar las rutas de user
 app.use(auth);//Authentication token middleware
