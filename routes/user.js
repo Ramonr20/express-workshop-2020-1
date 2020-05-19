@@ -5,43 +5,41 @@ const user = express.Router();
 const db = require('../config/database');
 
 user.post("/signin", async (req, res, next) => {
-    try{
-        const { user_name, user_mail, user_password } = req.body;
-        let query = "INSERT INTO user (user_name, user_mail, user_password);";
-        query += `VALUES('${user_name}', '${user_mail}', '${user_password}');`;
+    
+    const { user_name, user_mail, user_password } = req.body;
+    let query = "INSERT INTO user (user_name, user_mail, user_password)";
+    query += `VALUES('${user_name}', '${user_mail}', '${user_password}');`;
 
-        const rows = await db.query(query);
+    const rows = await db.query(query);
 
+    if (user_name && user_mail && user_password) {
         if (rows.affectedRows == 1) {
             return res.status(201).json({code: 201, message: "Usuario registrado correctamente"});
-        }
-    } catch {
-        return res.status(500).json({code: 500, message: "Ocurrio un error"})
-    }
+        }    
+    } else {
+        return res.status(200).json({code: 401, message: "Faltan campos"});
+    } 
+    return res.status(500).json({code: 500, message: "Ocurrio un error"})
+    
 });
 
 user.post("/login", async (req, res, next) => {
-    try {
-        const { user_mail, user_password } = req.body; 
-        const query = `SELECT * FROM user WHERE user_mail = '${user_mail}' AND user_password = '${user_password}';`;
-        const rows = await db.query(query);
+    const { user_mail, user_password } = req.body; 
+    const query = `SELECT * FROM user WHERE user_mail = '${user_mail}' AND user_password = '${user_password}';`;
+    const rows = await db.query(query);
 
-        if (user_mail && user_password){
-            if (rows.length == 1) {
-                // sing({data of the user}, "secret_key")
-                const token = jwt.sign({
-                    user_id: rows[0].user_id,
-                    user_mail: rows[0].user_mail
-                }, "debugkey");
+    if (user_mail && user_password){
+        if (rows.length == 1) {
+            // sing({data of the user}, "secret_key")
+            const token = jwt.sign({
+                user_id: rows[0].user_id,
+                user_mail: rows[0].user_mail
+            }, "debugkey");
 
-                return res.status(200).json({code: 200, message: token});
-            } else {
-                return res.status(200).json({code: 200, message: "Usuario y/o contraseña incorrectos"});
-            }
+            return res.status(200).json({code: 200, message: token});
+        } else {
+            return res.status(200).json({code: 401, message: "Usuario y/o contraseña incorrectos"});
         }
-
-    } catch {    
-        return res.status(500).json({code: 500, message:"Campos incompletos"});
     }
     return res.status(500).json({code: 500, message:"Campos incompletos"});
 });
