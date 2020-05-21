@@ -4,8 +4,8 @@ module.exports = (req, res, next) => {
         "Access-Control-Allow-Headers",
         "Origin, X-Requested-With, Content-Type, Accept, Authorization"
     );
-    if (req.method === 'OPSTIONS') {
-        req.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, EGT");
+    if (req.method === 'OPTIONS') {
+        req.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
         return res.status(200).json({});
     }
     next();
