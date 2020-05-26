@@ -23,7 +23,10 @@ PUT - modificar un recurso
 DELETE - borrar un recurso
 */
 app.use(cors);
-app.get("/", index);
+app.get("/", (req, res, next) => {
+    res.status(200);
+    res.send("Hola mundo");
+});
 app.use("/user", user);//cargar las rutas de user
 app.use(auth);//Authentication token middleware
 app.use("/pokemon", pokemon);// cargar las rutas de pokemon
